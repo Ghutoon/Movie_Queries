@@ -1,0 +1,23 @@
+{
+  "name": "movie_queries",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ghutoon/Movie_Queries.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ghutoon/Movie_Queries/issues"
+  },
+  "homepage": "https://github.com/Ghutoon/Movie_Queries#readme",
+  "dependencies": {
+    "axios": "^1.2.5",
+    "dotenv": "^16.0.3"
+  }
+}

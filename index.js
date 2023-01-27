@@ -6,65 +6,67 @@ let urlx = `https://api.themoviedb.org/3/search/person?`
 let actor_id = {};
 
 
-function map_actors_with_ID(actor_name) {
-    if (actor_id[actor_name] != null)
+async function map_actor_with_ID(actor_name) {
+    if (actor_id[actor_name] != null) // already mapped
         return;
-    let config = {
-        method: 'get',
-        url: urlx + `api_key=${process.env.THE_MOVIE_DB_KEY}&query=${actor_name}`,
-        headers: {}
-    };
 
-    axios(config)
-        .then((result) => {
-            if (result["total_results"] == 0)
-                return null;
-            actor_id[actor_name] = result.data.results[0]["id"];
-            console.log(actor_name + " " + actor_id[actor_name]);
-            return;
-
-        }).catch((err) => {
-            console.error(err.message);
-            console.log(`Failed to identify ${actor_name}`);
-            return;
-        });
+    try {
+        let config = {
+            method: 'get',
+            url: `https://api.themoviedb.org/3/search/person?api_key=${process.env.THE_MOVIE_DB_KEY}&query=${actor_name}`,
+            headers: {}
+        };
+        const actor_ID_response = await axios(config);
+        if (actor_ID_response["total_results"] == 0) { // map with unidentified
+            // actor_mapping[actor_name] = ACTOR_NOT_FOUND;
+            return null;
+        }
+        actor_id[actor_name] = actor_ID_response.data.results[0]["id"];
+        return;
+    } catch (err) {
+        console.error(err.message);
+        console.log(`Failed to identify ${actor_name}`);
+        return;
+    }
 }
 
-
-//console.log(queries["actors"])
+let actors = queries["actors"];
+/*console.log(actors.length)
+console.log(queries["actors"])
 queries["actors"].forEach(element => {
-    map_actors_with_ID(element);
-});
+    map_actor_with_ID(element);
+});*/
 
 
+async function fun() {
+    for (let i = 0; i < actors.length; i++) {
+        const name = actors[i];
+        let response = await map_actor_with_ID(name)
+    }
 
-
-function modify_url(urlx, actors) {
+    console.log(actor_id)
+    urlx = `https://api.themoviedb.org/3/discover/movie?`
+    let len = actors.length
     urlx += "&with_people=";
-    for (let i = 0; i < actors.length - 1; i++) {
+    for (let i = 0; i < len - 1; i++) {
         urlx += `${actor_id[actors[i]]},`;
     }
-    urlx += actor_id[actors[actors.length - 1]];
+    urlx += actor_id[actors[len - 1]];
 
     console.log(urlx);
-}
-
-modify_url(urlx, queries["actors"])
-
-function func() {
     var config = {
         method: 'get',
-        url: urlx + `&${process.env.THE_MOVIE_DB_KEY}`,
+        url: urlx + `&api_key=${process.env.THE_MOVIE_DB_KEY}`,
         headers: {}
     };
 
     axios(config)
         .then(function (response) {
-            console.log(JSON.stringify(response.data));
+            console.log(response.data);
         })
         .catch(function (error) {
             console.log(error);
         });
 }
 
-func();
+fun();
